@@ -1,0 +1,24 @@
+#!/bin/bash
+set -x
+if [ -z "$2" ]; then
+  echo "Usage: $(basename $0) outfile [prompt]"
+  exit 1
+fi
+
+OUTFILE=$1
+shift
+
+set -e
+
+cd $(dirname $0)
+
+# Older torch required
+. env/bin/activate
+
+TMPDIR=$(mktemp -d)
+
+python3 scripts/txt2img.py --n_iter 1 --n_samples 1 --plms --outdir ${TMPDIR} --prompt "$*"
+
+convert ${TMPDIR}/samples/0000.png ${OUTFILE}
+
+rm -rf ${TMPDIR}
