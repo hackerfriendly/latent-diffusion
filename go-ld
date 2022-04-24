@@ -19,6 +19,13 @@ TMPDIR=$(mktemp -d)
 
 python3 scripts/txt2img.py --n_iter 1 --n_samples 1 --plms --outdir ${TMPDIR} --prompt "$*"
 
-convert ${TMPDIR}/samples/0000.png ${OUTFILE}
+# Now for upscaling
+deactivate
+cd ../Real-ESRGAN
+. env/bin/activate
+
+python inference_realesrgan.py --face_enhance -n RealESRGAN_x4plus -i ${TMPDIR}/samples/0000.png -o ${TMPDIR}
+
+convert ${TMPDIR}/0000_out.png ${OUTFILE}
 
 rm -rf ${TMPDIR}
